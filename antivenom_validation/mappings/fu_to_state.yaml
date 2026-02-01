@@ -1,0 +1,85 @@
+# Mapeamento FU (sigla) → Estado (nome completo)
+# Inclui variantes com erros de digitação conhecidos
+
+AC:
+  - Acre
+
+AL:
+  - Alagoas
+
+AM:
+  - Amazonas
+
+AP:
+  - Amapá
+
+BA:
+  - Bahia
+
+CE:
+  - Ceará
+
+DF:
+  - Distrito Federal
+
+ES:
+  - Espírito Santo
+  - Espiríto Santo  # variante com erro de acentuação
+
+GO:
+  - Goiás
+
+MA:
+  - Maranhão
+
+MG:
+  - Minas Gerais
+
+MS:
+  - Mato Grosso do Sul
+
+MT:
+  - Mato Grosso
+
+PA:
+  - Pará
+
+PB:
+  - Paraíba
+
+PE:
+  - Pernambuco
+
+PI:
+  - Piauí
+
+PR:
+  - Paraná
+
+RJ:
+  - Rio de Janeiro
+
+RN:
+  - Rio Grande do Norte
+  - Rio grande do Norte  # variante com caixa incorreta
+
+RO:
+  - Rondônia
+
+RR:
+  - Roraima
+
+RS:
+  - Rio Grande do Sul
+
+SC:
+  - Santa Catarina
+
+SE:
+  - Sergipe
+
+SP:
+  - São Paulo
+
+TO:
+  - Tocantins

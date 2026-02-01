@@ -1,0 +1,39 @@
+# Mapeamento Região → FUs (siglas)
+# Regiões do Brasil
+
+North:
+  - AC
+  - AM
+  - AP
+  - PA
+  - RO
+  - RR
+  - TO
+
+Northeast:
+  - AL
+  - BA
+  - CE
+  - MA
+  - PB
+  - PE
+  - PI
+  - RN
+  - SE
+
+Midwest:
+  - DF
+  - GO
+  - MS
+  - MT
+
+Southeast:
+  - ES
+  - MG
+  - RJ
+  - SP
+
+South:
+  - PR
+  - RS
+  - SC

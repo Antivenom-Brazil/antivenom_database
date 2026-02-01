@@ -1,0 +1,108 @@
+version: 1
+dataset_name: "antivenom_locations"
+input:
+  kind: "csv"
+  path: "data/antivenom_locations.csv"
+
+table:
+  name: "main"
+
+columns:
+  expected:
+    - "Region"
+    - "Federal_Un"
+    - "FU"
+    - "Municipio"
+    - "Unidade de"
+    - "Telefone"
+    - "CNES"
+    - "Atendiment"
+    - "Atendime_1"
+    - "Lat"
+    - "Lon"
+    - "unknown"
+    - "layer"
+    - "path"
+  aliases: {}
+
+parsing:
+  trim_strings: true
+  decimal_comma_fields: ["Lat", "Lon"]
+  empty_as_null: true
+
+rules:
+  required_fields: ["Region", "Federal_Un", "FU", "Municipio", "Unidade de", "CNES", "Atendiment", "Lat", "Lon", "layer"]
+  types:
+    Lat: "float"
+    Lon: "float"
+    CNES: "string"
+    Telefone: "string"
+    layer: "string"
+
+  patterns:
+    CNES:
+      regex: "^[0-9]{7}$"
+      severity: "BLOCKER"
+    Telefone:
+      normalize_digits: true
+      min_len: 8
+      max_len: 15
+      severity: "MAJOR"
+
+  allowed_values:
+    Region: ["North", "Northeast", "Central-West", "Southeast", "South"]
+    FU: ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"]
+    antivenom_types: ["Botrópico","Laquético","Crotálico","Elapídico"]
+
+  missingness:
+    thresholds:
+      Telefone: 0.60
+      unknown: 1.00
+      path: 1.00
+
+  cross_field:
+    - name: "lat_lon_pair"
+      if_field_present: "Lat"
+      then_field_required: "Lon"
+      severity: "BLOCKER"
+    - name: "lon_lat_pair"
+      if_field_present: "Lon"
+      then_field_required: "Lat"
+      severity: "BLOCKER"
+
+  geospatial:
+    global_range:
+      Lat: [-90, 90]
+      Lon: [-180, 180]
+    plausible_bbox:
+      Lat: [-34, 6]
+      Lon: [-74, -34]
+    severity_outside_bbox: "MAJOR"
+
+  coherence:
+    enforce_fu_state_mapping: true
+    atendiment_split: ","
+    atendime_1_split: ","
+    require_matching_counts: true
+    count_tolerance: 0
+
+  uniqueness:
+    keys:
+      - ["CNES"]
+
+reproducibility:
+  row_order_invariant: true
+  stable_hash_fields: ["CNES", "Municipio", "Unidade de", "Atendiment", "Lat", "Lon"]
+  hash_algo: "sha256"
+
+performance:
+  max_seconds_full: 20
+  smoke_test_rows: 10000
+
+severity_policy:
+  fail_on: ["BLOCKER", "MAJOR"]
+
+reporting:
+  out_dir: "reports"
+  json_summary: "reports/summary.json"
+  junit_xml: "reports/junit.xml"

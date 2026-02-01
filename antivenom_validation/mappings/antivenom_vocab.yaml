@@ -1,0 +1,39 @@
+# Vocabulário controlado para campo 'unknown' (tipo de antiveneno/soro)
+# Lista de soros antiofídicos e antivenenos
+
+allowed_values:
+  # Soros antiofídicos
+  - SAB  
+  - SAC 
+  - SABC 
+  - SAE  
+  - SAEL 
+  - SAL  
+  - SABL   
+  - SAAr 
+  - SALo 
+  - SAEs 
+  - SALt 
+  - SABC/SAC
+  - SAB/SAC
+  - SAB/SABC
+  - null
+  - ""
+  - "-"
+  - "N/A"
+  - "Não informado"
+
+# Aliases (normalização)
+aliases:
+  "soro antibotrópico": "SAB"
+  "soro anticrotálico": "SAC"
+  "soro antibotrópico crotálico": "SABC"
+  "soro antielapídico": "SAE"
+  "soro antilaquético": "SAL"
+  "antibotrópico": "SAB"
+  "anticrotálico": "SAC"
+
+# Regex para validação
+patterns:
+  - "^SA[A-Z]{1,3}$"  # Padrão SA + 1-3 letras
+  - "^SA[A-Z]{1,3}/SA[A-Z]{1,3}$"  # Combinações com /

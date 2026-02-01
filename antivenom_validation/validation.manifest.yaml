@@ -1,0 +1,250 @@
+# ================================================================
+# MANIFEST DE VALIDAÇÃO - ANTIVENOM DATASET
+# ================================================================
+# Este arquivo configura todas as validações executadas no dataset
+# de localização de pontos de distribuição de antivenenos no Brasil.
+# ================================================================
+
+version: "1.0"
+name: "Antivenom Location Validation"
+description: "Suite de validação para dataset de localizações de antivenenos"
+
+# ----------------------------------------------------------------
+# Configuração do arquivo de entrada
+# ----------------------------------------------------------------
+input:
+  file: "antivenom_limpo4_corrigido.xlsx"
+  sheet_name: 0  # Primeira aba
+  encoding: "utf-8"
+
+# ----------------------------------------------------------------
+# Esquema esperado das colunas
+# ----------------------------------------------------------------
+schema:
+  columns:
+    - name: Region
+      type: string
+      required: true
+      description: "Região do Brasil (North, Northeast, Midwest, Southeast, South)"
+      
+    - name: Federal_Un
+      type: string
+      required: true
+      aliases: ["Federal_Unit", "Estado"]
+      description: "Nome do estado por extenso"
+      
+    - name: FU
+      type: string
+      required: true
+      aliases: ["UF", "Sigla_UF"]
+      description: "Sigla da unidade federativa (2 letras)"
+      
+    - name: Municipio
+      type: string
+      required: true
+      aliases: ["Município", "City"]
+      description: "Nome do município"
+      
+    - name: "Unidade de"
+      type: string
+      required: true
+      aliases: ["Unidade", "Nome_Unidade"]
+      description: "Nome da unidade de saúde"
+      
+    - name: Endereço
+      type: string
+      required: false
+      aliases: ["Endereco", "Address"]
+      description: "Endereço da unidade"
+      
+    - name: Telefone
+      type: string
+      required: false
+      aliases: ["Phone", "Tel"]
+      description: "Telefone de contato"
+      
+    - name: CNES
+      type: string
+      required: true
+      description: "Código CNES (7 dígitos)"
+      
+    - name: Atendiment
+      type: string
+      required: false
+      description: "Tipos de atendimento (lista separada por vírgula)"
+      
+    - name: Atendime_1
+      type: string
+      required: false
+      description: "Abreviações dos tipos de atendimento"
+      
+    - name: Lat
+      type: float
+      required: true
+      aliases: ["latitude", "Latitude"]
+      description: "Latitude (graus decimais)"
+      
+    - name: Lon
+      type: float
+      required: true
+      aliases: ["longitude", "Longitude", "Lng"]
+      description: "Longitude (graus decimais)"
+      
+    - name: unknown
+      type: string
+      required: false
+      description: "Tipo de antiveneno disponível"
+      
+    - name: layer
+      type: string
+      required: false
+      description: "Camada de origem (GIS)"
+      
+    - name: path
+      type: string
+      required: false
+      description: "Caminho do arquivo de origem"
+
+# ----------------------------------------------------------------
+# Vocabulário controlado
+# ----------------------------------------------------------------
+vocab:
+  Region:
+    allowed:
+      - North
+      - Northeast
+      - Midwest
+      - Southeast
+      - South
+    case_sensitive: true
+    
+  FU:
+    allowed:
+      - AC
+      - AL
+      - AM
+      - AP
+      - BA
+      - CE
+      - DF
+      - ES
+      - GO
+      - MA
+      - MG
+      - MS
+      - MT
+      - PA
+      - PB
+      - PE
+      - PI
+      - PR
+      - RJ
+      - RN
+      - RO
+      - RR
+      - RS
+      - SC
+      - SE
+      - SP
+      - TO
+    case_sensitive: true
+
+# ----------------------------------------------------------------
+# Restrições de dados
+# ----------------------------------------------------------------
+constraints:
+  CNES:
+    pattern: "^\\d{7}$"
+    special_values:
+      - "Not informed1-4"
+      - "Not informed"
+    min_length: 7
+    max_length: 7
+    
+  Telefone:
+    pattern: "^\\(?\\d{2}\\)?\\s?\\d{4,5}-?\\d{4}$"
+    allow_null: true
+    
+  missingness:
+    Lat:
+      max_null_percent: 5
+    Lon:
+      max_null_percent: 5
+    CNES:
+      max_null_percent: 1
+
+# ----------------------------------------------------------------
+# Configuração geoespacial
+# ----------------------------------------------------------------
+geo:
+  lat_column: Lat
+  lon_column: Lon
+  bounds:
+    lat_min: -33.75
+    lat_max: 5.27
+    lon_min: -73.99
+    lon_max: -32.39
+  coordinate_precision: 6
+  allow_duplicates: true
+
+# ----------------------------------------------------------------
+# Chaves primárias
+# ----------------------------------------------------------------
+keys:
+  primary:
+    - CNES
+  composite: []
+
+# ----------------------------------------------------------------
+# Campos de coerência (cross-field validation)
+# ----------------------------------------------------------------
+cross_field:
+  fu_to_state:
+    source_file: "mappings/fu_to_state.yaml"
+    source_column: FU
+    target_column: Federal_Un
+    
+  fu_to_region:
+    source_file: "mappings/fu_to_region.yaml"
+    source_column: FU
+    target_column: Region
+
+# ----------------------------------------------------------------
+# Configuração de performance
+# ----------------------------------------------------------------
+perf:
+  load_time_warn: 5.0
+  load_time_error: 30.0
+  memory_warn_mb: 100
+  memory_error_mb: 500
+  row_threshold: 100000
+
+# ----------------------------------------------------------------
+# Checks habilitados
+# ----------------------------------------------------------------
+checks:
+  enabled:
+    - schema
+    - parsing
+    - constraints
+    - vocab
+    - coherence
+    - geospatial
+    - uniqueness
+    - reproducibility
+    - perf
+    
+  disabled: []
+
+# ----------------------------------------------------------------
+# Configuração de severidade customizada
+# ----------------------------------------------------------------
+severity_overrides: {}
+
+# ----------------------------------------------------------------
+# Metadados de reprodutibilidade
+# ----------------------------------------------------------------
+reproducibility:
+  expected_rows: 1900
+  expected_columns: 15
+  expected_hash: null  # Preencher após primeira execução
